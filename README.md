@@ -66,6 +66,6 @@ conguis-construction/
 
 ## Desarrollado por
 
-**Daniela Chaves** — [GitHub: DaniChaves](https://github.com/DaniChaves)
+**Daniela Chaves** — [GitHub: DaniChaves](https://github.com/Dan180894)
 
 Proyecto desarrollado como parte de mi portafolio para roles de Desarrolladora Frontend Junior.
