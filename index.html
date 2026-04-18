@@ -607,6 +607,94 @@
       .about-accent-box { position: relative; bottom: auto; right: auto; margin-top: 1rem; display: inline-block; }
       .about-features { grid-template-columns: 1fr; }
     }
+
+    /* ═══════════════════════════════════
+       LIGHTBOX
+    ═══════════════════════════════════ */
+    .gallery-item { cursor: pointer; }
+
+    /* El overlay cubre toda la pantalla con fondo oscuro semitransparente */
+    .lightbox-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .lightbox-overlay.active { display: flex; }
+
+    .lightbox-box {
+      background: var(--bg-dark-2);
+      border-radius: var(--radius);
+      overflow: hidden;
+      max-width: 820px;
+      width: 100%;
+      position: relative;
+    }
+
+    .lightbox-img-wrap {
+      width: 100%;
+      aspect-ratio: 16/10;
+      overflow: hidden;
+    }
+    .lightbox-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .lightbox-footer {
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .lightbox-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--text-light);
+    }
+    .lightbox-counter {
+      font-size: 0.78rem;
+      color: var(--muted-light);
+      margin-top: 2px;
+    }
+
+    /* Botones de navegación anterior/siguiente */
+    .lb-nav {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .lb-nav-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: white;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .lb-nav-btn:hover { background: rgba(255,255,255,0.18); }
+    .lb-nav-btn svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; }
+
+    /* Botón X para cerrar */
+    .lb-close {
+      position: absolute;
+      top: 0.75rem; right: 0.75rem;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.4);
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .lb-close:hover { background: rgba(0,0,0,0.7); }
   </style>
 </head>
 <body>
@@ -697,18 +785,42 @@
         <p class="section-desc" data-i18n="galeria_desc">Cada proyecto refleja nuestro compromiso con la excelencia.</p>
       </div>
       <div class="gallery-grid">
-        <div class="gallery-item reveal"><img src="img/11-piscina-infinity.jpg" alt="Piscina Infinity" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal1">Piscina Infinity</span></div></div>
-        <div class="gallery-item reveal"><img src="img/07-construccion-obra.jpg" alt="Construcción" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal2">Construcción</span></div></div>
-        <div class="gallery-item reveal"><img src="img/01-remodelacion.jpg" alt="Remodelación" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal3">Remodelación</span></div></div>
-        <div class="gallery-item reveal"><img src="img/03-casa-piscina.jpg" alt="Casa con Piscina" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal4">Casa con Piscina</span></div></div>
-        <div class="gallery-item reveal"><img src="img/04-casa-terminada.jpg" alt="Casa Terminada" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal5">Casa Terminada</span></div></div>
-        <div class="gallery-item reveal"><img src="img/06-casa-moderna.jpg" alt="Casa Moderna" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal6">Casa Moderna</span></div></div>
-        <div class="gallery-item reveal"><img src="img/05-construccion-techo.jpg" alt="Construcción de Techo" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal7">Construcción de Techo</span></div></div>
-        <div class="gallery-item reveal"><img src="img/02-piscina-jacuzzi.jpg" alt="Piscina y Jacuzzi" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal8">Piscina y Jacuzzi</span></div></div>
-        <div class="gallery-item reveal"><img src="img/09-obra-gris.jpg" alt="Obra Gris" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal9">Obra Gris</span></div></div>
+        <div class="gallery-item reveal" onclick="abrirLightbox(0)"><img src="img/11-piscina-infinity.jpg" alt="Piscina Infinity" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal1">Piscina Infinity</span></div></div>
+        <div class="gallery-item reveal" onclick="abrirLightbox(1)"><img src="img/07-construccion-obra.jpg" alt="Construcción" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal2">Construcción</span></div></div>
+        <div class="gallery-item reveal" onclick="abrirLightbox(2)"><img src="img/01-remodelacion.jpg" alt="Remodelación" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal3">Remodelación</span></div></div>
+        <div class="gallery-item reveal" onclick="abrirLightbox(3)"><img src="img/03-casa-piscina.jpg" alt="Casa con Piscina" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal4">Casa con Piscina</span></div></div>
+        <div class="gallery-item reveal" onclick="abrirLightbox(4)"><img src="img/04-casa-terminada.jpg" alt="Casa Terminada" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal5">Casa Terminada</span></div></div>
+        <div class="gallery-item reveal" onclick="abrirLightbox(5)"><img src="img/06-casa-moderna.jpg" alt="Casa Moderna" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal6">Casa Moderna</span></div></div>
+        <div class="gallery-item reveal" onclick="abrirLightbox(6)"><img src="img/05-construccion-techo.jpg" alt="Construcción de Techo" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal7">Construcción de Techo</span></div></div>
+        <div class="gallery-item reveal" onclick="abrirLightbox(7)"><img src="img/02-piscina-jacuzzi.jpg" alt="Piscina y Jacuzzi" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal8">Piscina y Jacuzzi</span></div></div>
+        <div class="gallery-item reveal" onclick="abrirLightbox(8)"><img src="img/09-obra-gris.jpg" alt="Obra Gris" loading="lazy"><div class="gallery-overlay"><span data-i18n="gal9">Obra Gris</span></div></div>
       </div>
     </div>
   </section>
+
+  <!-- ═══ LIGHTBOX ═══ -->
+  <div class="lightbox-overlay" id="lightboxOverlay" onclick="cerrarLightbox(event)">
+    <div class="lightbox-box">
+      <button class="lb-close" onclick="cerrarLightbox(null)">&#x2715;</button>
+      <div class="lightbox-img-wrap">
+        <img id="lbImg" src="" alt="">
+      </div>
+      <div class="lightbox-footer">
+        <div>
+          <div class="lightbox-title" id="lbTitulo"></div>
+          <div class="lightbox-counter" id="lbContador"></div>
+        </div>
+        <div class="lb-nav">
+          <button class="lb-nav-btn" onclick="navegarLightbox(-1)">
+            <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="lb-nav-btn" onclick="navegarLightbox(1)">
+            <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ═══ SOBRE NOSOTROS ═══ -->
   <section id="sobre">
@@ -958,7 +1070,7 @@
       }
 
       // Template literal — arma el texto con los datos usando ${variable}
-     const texto = `Hola! Mi nombre es ${nombre}, me interesa el servicio de ${servicio}.${mensaje ? ' ' + mensaje : ''}`;
+      const texto = `${nombre} - ${servicio}${mensaje ? ': ' + mensaje : ''}`;
 
       // encodeURIComponent convierte espacios y caracteres especiales a formato URL
       // (por ejemplo "Hola Mundo" se convierte en "Hola%20Mundo")
@@ -998,6 +1110,61 @@
     }, { threshold: 0.12 });
 
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // ─── LIGHTBOX ───
+    // Array con los datos de cada foto — src (ruta de la imagen) y el título traducible
+    const lbFotos = [
+      { src: 'img/11-piscina-infinity.jpg', key: 'gal1' },
+      { src: 'img/07-construccion-obra.jpg', key: 'gal2' },
+      { src: 'img/01-remodelacion.jpg',      key: 'gal3' },
+      { src: 'img/03-casa-piscina.jpg',      key: 'gal4' },
+      { src: 'img/04-casa-terminada.jpg',    key: 'gal5' },
+      { src: 'img/06-casa-moderna.jpg',      key: 'gal6' },
+      { src: 'img/05-construccion-techo.jpg',key: 'gal7' },
+      { src: 'img/02-piscina-jacuzzi.jpg',   key: 'gal8' },
+      { src: 'img/09-obra-gris.jpg',         key: 'gal9' },
+    ];
+
+    let lbActual = 0;
+
+    function abrirLightbox(i) {
+      lbActual = i;
+      actualizarLightbox();
+      // Agrega la clase 'active' que cambia display:none a display:flex (el overlay aparece)
+      document.getElementById('lightboxOverlay').classList.add('active');
+      // Desactiva el scroll del body mientras el lightbox está abierto
+      document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarLightbox(e) {
+      // Si el click fue dentro de la caja (lightbox-box) no cierra — solo cierra si clickás el fondo oscuro
+      if (e && e.target !== document.getElementById('lightboxOverlay')) return;
+      document.getElementById('lightboxOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function navegarLightbox(dir) {
+      // El módulo (%) permite que al llegar al último vuelva al primero y viceversa (navegación circular)
+      lbActual = (lbActual + dir + lbFotos.length) % lbFotos.length;
+      actualizarLightbox();
+    }
+
+    function actualizarLightbox() {
+      const foto = lbFotos[lbActual];
+      const t = translations[currentLang];
+      document.getElementById('lbImg').src = foto.src;
+      document.getElementById('lbImg').alt = t[foto.key] || '';
+      document.getElementById('lbTitulo').textContent = t[foto.key] || '';
+      document.getElementById('lbContador').textContent = `${lbActual + 1} / ${lbFotos.length}`;
+    }
+
+    // Listener del teclado — ESC cierra, flechas navegan
+    document.addEventListener('keydown', e => {
+      if (!document.getElementById('lightboxOverlay').classList.contains('active')) return;
+      if (e.key === 'Escape')      cerrarLightbox(null);
+      if (e.key === 'ArrowRight')  navegarLightbox(1);
+      if (e.key === 'ArrowLeft')   navegarLightbox(-1);
+    });
   </script>
 </body>
 </html>
