@@ -695,6 +695,24 @@
       transition: background 0.2s;
     }
     .lb-close:hover { background: rgba(0,0,0,0.7); }
+
+    .cf-preview {
+      display: none;
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: #e8f8ee;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      color: #1a5c34;
+      text-align: left;
+      line-height: 1.5;
+      border: 1px solid rgba(37,211,102,0.2);
+    }
+    .cf-preview.visible { display: block; }
+    .cf-preview-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #1a5c34; opacity: 0.7; margin-bottom: 3px; }
+
+    .nav-links a.nav-active { color: var(--accent); }
+    .nav-links a.nav-active::after { width: 100%; }
   </style>
 </head>
 <body>
@@ -892,11 +910,11 @@
 
           <div class="cf-field">
             <!-- input type="text" = campo de una sola línea para texto libre -->
-            <input type="text" id="cf-nombre" data-i18n-placeholder="cf_nombre_ph" placeholder="Su nombre completo" />
+            <input type="text" id="cf-nombre" data-i18n-placeholder="cf_nombre_ph" placeholder="Su nombre completo" oninput="actualizarPreview()" />
           </div>
           <div class="cf-field">
             <!-- select = menú desplegable; las opciones usan data-i18n para traducirse automáticamente -->
-            <select id="cf-servicio">
+            <select id="cf-servicio" onchange="actualizarPreview()">
               <option value="" data-i18n="cf_servicio_ph">Seleccione un servicio...</option>
               <option data-i18n="srv1_title">Construcción</option>
               <option data-i18n="srv2_title">Remodelación</option>
@@ -906,8 +924,13 @@
             </select>
           </div>
           <div class="cf-field">
-            <!-- textarea = campo de texto multilínea para mensajes largos -->
-            <textarea id="cf-mensaje" rows="3" data-i18n-placeholder="cf_mensaje_ph" placeholder="Cuéntenos sobre su proyecto..."></textarea>
+            <textarea id="cf-mensaje" rows="3" data-i18n-placeholder="cf_mensaje_ph" placeholder="Cuéntenos sobre su proyecto..." oninput="actualizarPreview()"></textarea>
+          </div>
+
+          <!-- Vista previa — muestra el mensaje armado antes de enviarlo -->
+          <div class="cf-preview" id="cfPreview">
+            <div class="cf-preview-label">Vista previa del mensaje</div>
+            <span id="cfPreviewTexto"></span>
           </div>
 
           <!-- button con onclick llama la función JS al hacer click -->
@@ -1164,6 +1187,72 @@
       if (e.key === 'Escape')      cerrarLightbox(null);
       if (e.key === 'ArrowRight')  navegarLightbox(1);
       if (e.key === 'ArrowLeft')   navegarLightbox(-1);
+    });
+
+    // ─── VISTA PREVIA DEL FORMULARIO ───
+    // Se ejecuta cada vez que el usuario escribe en cualquier campo (oninput / onchange)
+    function actualizarPreview() {
+      const nombre   = document.getElementById('cf-nombre').value.trim();
+      const servicio = document.getElementById('cf-servicio').value;
+      const mensaje  = document.getElementById('cf-mensaje').value.trim();
+      const preview  = document.getElementById('cfPreview');
+      const texto    = document.getElementById('cfPreviewTexto');
+
+      if (nombre || servicio) {
+        const msg = `Hola! Mi nombre es ${nombre || '(nombre)'}, me interesa el servicio de ${servicio || '(servicio)'}.${mensaje ? ' ' + mensaje : ''}`;
+        texto.textContent = msg;
+        preview.classList.add('visible'); // muestra el div de vista previa
+      } else {
+        preview.classList.remove('visible'); // lo oculta si los campos están vacíos
+      }
+    }
+
+    // ─── CONTADOR ANIMADO ───
+    // Anima el número desde 0 hasta el valor final cuando el elemento entra en pantalla
+    function animarContador(el, hasta, duracion) {
+      let inicio = 0;
+      // Math.ceil divide la duración en pasos para que la animación sea fluida
+      const paso = Math.ceil(duracion / hasta);
+      const timer = setInterval(() => {
+        inicio++;
+        el.textContent = inicio + '+';
+        if (inicio >= hasta) clearInterval(timer); // detiene el intervalo al llegar al valor final
+      }, paso);
+    }
+
+    // IntersectionObserver específico para el contador — solo se dispara una vez
+    const contadorEl = document.querySelector('.big-num');
+    if (contadorEl) {
+      const contadorObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            animarContador(contadorEl, 10, 1000); // cuenta de 0 a 10 en 1 segundo
+            contadorObserver.unobserve(contadorEl); // no repite la animación
+          }
+        });
+      }, { threshold: 0.5 });
+      contadorObserver.observe(contadorEl);
+    }
+
+    // ─── ACTIVE SECTION EN NAVBAR ───
+    // Detecta qué sección está visible y resalta el link correspondiente en el navbar
+    const secciones = ['servicios', 'galeria', 'sobre', 'contacto'];
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          // Quita la clase activa de todos los links
+          document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('nav-active'));
+          // Busca el link cuyo href coincide con el id de la sección visible y le agrega la clase
+          const link = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+          if (link) link.classList.add('nav-active');
+        }
+      });
+    }, { threshold: 0.4 }); // 0.4 = el link se activa cuando el 40% de la sección es visible
+
+    secciones.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) sectionObserver.observe(el);
     });
   </script>
 </body>
