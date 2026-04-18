@@ -722,37 +722,37 @@
 
     .hero-text { max-width: 620px; }
 
-    /* Columna derecha con las pills */
+    /* Columna derecha con pills en grid 2x2 + barra de stats */
     .hero-pills {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      align-items: flex-start;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: start;
     }
 
     .hero-pill {
       background: white;
       border: 1px solid rgba(194,112,62,0.18);
       border-radius: 50px;
-      padding: 0.7rem 1.3rem;
+      padding: 0.75rem 1.2rem;
       font-family: 'Raleway', sans-serif;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 500;
       color: var(--text);
       display: flex;
       align-items: center;
-      gap: 0.7rem;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      gap: 0.6rem;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
     }
 
     .pill-dot {
-      width: 9px; height: 9px;
+      width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--accent);
       flex-shrink: 0;
     }
 
-    /* Cada pill tiene su propia animación de flotación desfasada (offset) */
+    /* Las pills animan a distintas velocidades para verse orgánico */
     .hero-pill:nth-child(1) { animation: floatA 3s ease-in-out infinite; }
     .hero-pill:nth-child(2) { animation: floatB 3.5s ease-in-out infinite; }
     .hero-pill:nth-child(3) { animation: floatA 4s ease-in-out infinite; }
@@ -765,6 +765,48 @@
     @keyframes floatB {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(8px); }
+    }
+
+    /* Barra de stats debajo de las pills — ocupa las 2 columnas del grid */
+    .hero-stats {
+      grid-column: span 2;
+      background: rgba(194,112,62,0.07);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .hero-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .hero-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .hero-stat-txt {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* Separador vertical entre stats */
+    .hero-stat-sep {
+      width: 1px;
+      height: 30px;
+      background: rgba(194,112,62,0.2);
     }
 
     @media (max-width: 768px) {
@@ -819,12 +861,28 @@
         </div>
       </div>
 
-      <!-- Pills flotantes — cada una anima a diferente velocidad para verse orgánico -->
+      <!-- Pills en grid 2x2 + barra de stats que ancla visualmente el lado derecho -->
       <div class="hero-pills">
         <div class="hero-pill"><div class="pill-dot"></div><span data-i18n="srv1_title">Construcción</span></div>
         <div class="hero-pill"><div class="pill-dot"></div><span data-i18n="srv2_title">Remodelación</span></div>
         <div class="hero-pill"><div class="pill-dot"></div><span data-i18n="srv3_title">Aire Acondicionado</span></div>
         <div class="hero-pill"><div class="pill-dot"></div><span data-i18n="srv4_title">Cerámica y Pisos</span></div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-num">10+</span>
+            <span class="hero-stat-txt" data-i18n="stat_anos">Años</span>
+          </div>
+          <div class="hero-stat-sep"></div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">50+</span>
+            <span class="hero-stat-txt" data-i18n="stat_proyectos">Proyectos</span>
+          </div>
+          <div class="hero-stat-sep"></div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">100%</span>
+            <span class="hero-stat-txt" data-i18n="stat_garantia">Garantía</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1050,6 +1108,7 @@
         wa_title: "¿Tiene un proyecto en mente?", wa_desc: "Escríbanos directamente por WhatsApp y le respondemos lo antes posible.", wa_btn: "Enviar mensaje",
         cf_nombre_ph: "Su nombre completo", cf_servicio_ph: "Seleccione un servicio...", cf_otro: "Otro",
         cf_mensaje_ph: "Cuéntenos sobre su proyecto...", cf_alerta: "Por favor complete su nombre y el servicio de interés.",
+        stat_anos: "Años", stat_proyectos: "Proyectos", stat_garantia: "Garantía",
         footer: "Todos los derechos reservados."
       },
       en: {
@@ -1078,6 +1137,7 @@
         wa_title: "Have a project in mind?", wa_desc: "Message us directly on WhatsApp and we'll respond as soon as possible.", wa_btn: "Send message",
         cf_nombre_ph: "Your full name", cf_servicio_ph: "Select a service...", cf_otro: "Other",
         cf_mensaje_ph: "Tell us about your project...", cf_alerta: "Please fill in your name and the service you are interested in.",
+        stat_anos: "Years", stat_proyectos: "Projects", stat_garantia: "Guarantee",
         footer: "All rights reserved."
       },
       fr: {
@@ -1106,6 +1166,7 @@
         wa_title: "Vous avez un projet en tête ?", wa_desc: "Écrivez-nous directement sur WhatsApp et nous vous répondrons dès que possible.", wa_btn: "Envoyer un message",
         cf_nombre_ph: "Votre nom complet", cf_servicio_ph: "Sélectionnez un service...", cf_otro: "Autre",
         cf_mensaje_ph: "Parlez-nous de votre projet...", cf_alerta: "Veuillez compléter votre nom et le service qui vous intéresse.",
+        stat_anos: "Ans", stat_proyectos: "Projets", stat_garantia: "Garantie",
         footer: "Tous droits réservés."
       }
     };
